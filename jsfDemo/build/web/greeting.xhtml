@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./template.xhtml">
+
+            <ui:define name="title">
+                Greeting
+            </ui:define>
+
+            <ui:define name="box">
+                <h4>Hi, my name is Duke!</h4>
+
+                <h5>I'm thinking of a number
+
+                    <br/>
+                    between
+                    <span class="highlight">0</span> and
+                    <span class="highlight">10</span>.</h5>
+
+                <h5>Can you guess it?</h5>
+
+                <h:form>
+                    <h:inputText size="2" maxlength="2" value="#{UserNumberBean.userNumber}" />
+                    <h:commandButton id="submit" value="submit" action="response" />
+                </h:form>
+            </ui:define>
+            
+            <ui:define name="attempt-table">
+                <h1>Past Attempts</h1>
+                <h:dataTable value="#{AttemptBean.getAttempts()}" var="c"
+                             styleClass="order-table"
+                             headerClass="order-table-header"
+                             rowClasses="order-table-odd-row,order-table-even-row"
+                             frame="box">
+                    <h:column>
+                        <f:facet name="header">
+                            Timestamp
+                        </f:facet>
+                            #{c.getAtime()}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">
+                            User's Guess
+                        </f:facet>
+                            #{c.getUsernum()}
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">
+                            Duke's Number
+                        </f:facet>
+                            #{c.getActualnum()}
+                    </h:column>
+                    
+                </h:dataTable>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>
