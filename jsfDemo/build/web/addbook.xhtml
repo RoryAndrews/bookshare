@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./template.xhtml">
+
+            <ui:define name="title">
+                BookTracker: Add Book
+            </ui:define>
+
+            <ui:define name="box">
+                <h:form>
+                    Title:<h:inputText size="30" maxlength="128" binding="#{title}" /><br/>
+                    Author:<h:inputText size="30" maxlength="128" binding="#{author}" /><br/>
+                    ISBN:<h:inputText size="13" maxlength="13" binding="#{isbn}" /><br/>
+                    Publisher:<h:inputText size="30" maxlength="128" binding="#{publisher}" /><br/>
+                    Year Published:<h:inputText size="4" maxlength="4" binding="#{year}" /><br/>
+                    <h:commandButton id="submit" value="submit" action="#{BookDatabase.addBook(title.value, author.value, isbn.value, publisher.value, year.value)}" />
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

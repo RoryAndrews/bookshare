@@ -13,10 +13,11 @@ import javax.faces.bean.SessionScoped;
  *
  * @author rory0
  */
-@ManagedBean(name="BookTrackerBean")
+@ManagedBean(name="AppController", eager = true)
 @SessionScoped
-public class BookTrackerBean implements Serializable {
+public class AppController implements Serializable {
     private String username;
+    private BookDatabase catalog;
 
     public String getUsername() {
         return username;
@@ -27,4 +28,8 @@ public class BookTrackerBean implements Serializable {
         
     }
     
+    public AppController() {
+        catalog = new BookDatabase();
+        catalog.createTable();
+    }
 }

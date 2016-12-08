@@ -3,12 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package guessNumber;
+package bookTracker;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpSession;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -16,29 +12,30 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import oracle.jdbc.pool.OracleDataSource;
 
 /**
  *
  * @author rory0
  */
-@ManagedBean(name="AttemptBean")
+@ManagedBean(name="BookDatabase", eager = true)
 @SessionScoped
-public class AttemptBean implements Serializable{
-    
-    /* Private Members*/
+public class BookDatabase implements Serializable {
     private static PreparedStatement poStmt;
     private static Statement selectStmt;
     private static ResultSet rs;
     private static Connection conn;
-
+    
     /*needed for properties file*/
     static Properties connProps = new Properties();
-
-    public AttemptBean() {
+    
+    public BookDatabase() {
         String db, userName, passwd, host, port;
         host=port=db=userName=passwd=null;
 
@@ -55,22 +52,22 @@ public class AttemptBean implements Serializable{
         }
     }
     
-    public List<Attempt> getAttempts() {
-        List<Attempt> list = new ArrayList<Attempt>();
-        System.out.println("GETTING ATTEMPTS.");
+    public List<Book> getBooks() {
+        List<Book> list = new ArrayList<Book>();
+        System.out.println("GETTING Book Catalog.");
 
         try {
             selectStmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
                                               ResultSet.CONCUR_READ_ONLY);
-            rs = selectStmt.executeQuery("SELECT * FROM DBUSER.ATTEMPTS");
+            rs = selectStmt.executeQuery("SELECT * FROM DBUSER.BOOKCATALOG");
             while (rs.next()) {
-                Attempt a = new Attempt(rs.getTimestamp("atime"), rs.getInt("usernum"), rs.getInt("actualnum"));
-                list.add(a);
+                Book b = new Book(rs.getString("title"), rs.getString("authors"), rs.getLong("isbn"), rs.getString("publisher"), rs.getInt("published"));
+                list.add(b);
             }
 
             selectStmt.close();
         } catch (SQLException sqle) {
-            System.out.println("ERROR IN getAttempts");
+            System.out.println("ERROR IN getBooks");
             System.out.println("Error Msg: "+ sqle.getMessage());
             System.out.println("SQLState: "+sqle.getSQLState());
             System.out.println("SQLError: "+sqle.getErrorCode());
@@ -93,22 +90,96 @@ public class AttemptBean implements Serializable{
         return list;
     }
     
-    public Boolean addAttempt(Attempt addition) {
-        try {
-            selectStmt = conn.createStatement();
-            rs = selectStmt.executeQuery("SELECT count(*) as num FROM Attempts");
-            
-            if (rs.next() && rs.getInt("num") >= 20) {
-                selectStmt.executeUpdate("DELETE FROM Attempts "
-                                       + "WHERE timestamp >= ALL (SELECT timestamp FROM Attempts)");
+    public List<Book> findBooks(String title, String authors, String isbn, String publisher, String year) {
+        List<Book> list = new ArrayList<Book>();
+        System.out.println("SEARCHING Book Catalog.");
+        boolean previous = false;
+        
+        String query = "SELECT * FROM BOOKCATALOG WHERE";
+        if (title.length() > 0) {
+            query = query + " title LIKE '%" + title + "%'";
+            previous = true;
+        }
+        if (author.length() > 0) {
+            if (previous) {
+                query = query + " AND";
             }
-            
-            selectStmt.executeUpdate("INSERT INTO Attempts VALUES (TIMESTAMP'"
-                    + addition.getAtime().toString() + "'," + addition.getUsernum() + "," + addition.getActualnum() + ")");
+            query = query + " authors LIKE '%" + authors + "%'";
+            previous = true;
+        }
+        if (isbn.length() > 0) {
+            if (previous) {
+                query = query + " AND";
+            }
+            query = query + " isbn=" + isbn;
+            previous = true;
+        }
+        if (publisher.length() > 0) {
+            if (previous) {
+                query = query + " AND";
+            }
+            query = query + " publisher LIKE '%" + publisher + "%'";
+            previous = true;
+        }
+        if (year.length() > 0) {
+            if (previous) {
+                query = query + " AND";
+            }
+            query = query + " year=" + year;
+            previous = true;
+        }
+        if (!previous) {
+            return getBooks();
+        }
+                
+        
+
+        try {
+            selectStmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
+                                              ResultSet.CONCUR_READ_ONLY);
+            rs = selectStmt.executeQuery(query);
+            while (rs.next()) {
+                Book b = new Book(rs.getString("title"), rs.getString("authors"), rs.getLong("isbn"), rs.getString("publisher"), rs.getInt("published"));
+                list.add(b);
+            }
 
             selectStmt.close();
         } catch (SQLException sqle) {
-            System.out.println("ERROR IN addAttempt");
+            System.out.println("ERROR IN getBooks");
+            System.out.println("Error Msg: "+ sqle.getMessage());
+            System.out.println("SQLState: "+sqle.getSQLState());
+            System.out.println("SQLError: "+sqle.getErrorCode());
+            System.out.println("Rollback the transaction and quit the program");
+            System.out.println();
+            try {
+                conn.setAutoCommit(false);
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            try {
+                conn.rollback();
+            } catch (Exception e) {
+                JdbcException jdbcExc = new JdbcException(e, conn);
+                jdbcExc.handle();
+            }
+            System.exit(1);
+        }
+        return list;
+    }
+    
+    public String addBook(Book addition) {
+        try {
+            selectStmt = conn.createStatement();
+
+            selectStmt.executeUpdate("INSERT INTO BOOKCATALOG VALUES ('"
+                    + addition.getCover()+ "','" + addition.getTitle()
+                    + "','" + addition.getAuthors() + "'," + addition.getIsbn() 
+                    + ",'" + addition.getPublisher() + "','" + addition.getPublished() + "')");
+
+            selectStmt.close();
+        } catch (SQLException sqle) {
+            System.out.println("ERROR IN addBook");
             System.out.println("Error Msg: "+ sqle.getMessage());
             System.out.println("SQLState: "+sqle.getSQLState());
             System.out.println("SQLError: "+sqle.getErrorCode());
@@ -129,19 +200,43 @@ public class AttemptBean implements Serializable{
             System.exit(1);
         }
 
-        return true;
+        return "booksearch";
+    }
+    
+    public String addBook(String title, String author, long isbn, String publisher, int publishedOn) {
+        Book b = new Book(title, author, isbn, publisher, publishedOn);
+        return addBook(b);
     }
     
     public Boolean createTable() {
         try {
             selectStmt = conn.createStatement();
             DatabaseMetaData dmd = conn.getMetaData();
-            ResultSet rs = dmd.getTables(null, null, "ATTEMPTS", null);
-            if(rs.next()) {
-                selectStmt.executeUpdate("DROP TABLE Attempts");
+            ResultSet rs = dmd.getTables(null, null, "BOOKCATALOG", null);
+            if(!rs.next()) {
+                selectStmt.executeUpdate("CREATE TABLE BOOKCATALOG ("
+                        + "cover varchar(128),"
+                        + "title varchar(128) NOT NULL,"
+                        + "authors varchar(128) NOT NULL,"
+                        + "isbn number(13) NOT NULL,"
+                        + "publisher varchar(128),"
+                        + "published number(4),"
+                        + "PRIMARY KEY (isbn)"
+                        + ")");
+                System.out.println("TABLE BOOKCATALOG CREATED.");
             }
-            selectStmt.executeUpdate("CREATE TABLE Attempts (atime Timestamp, usernum integer, actualnum integer)");
-            System.out.println("TABLE CREATED.");
+            rs = dmd.getTables(null, null, "BOOKLISTS", null);
+            if(!rs.next()) {
+                selectStmt.executeUpdate("CREATE TABLE BOOKLISTS ("
+                        + "username varchar(16) NOT NULL,"
+                        + "isbn number(13) NOT NULL,"
+                        + "finished char(1),"
+                        + "PRIMARY KEY (username, isbn),"
+                        + "FOREIGN KEY (isbn) REFERENCES BOOKCATALOG(isbn),"
+                        + "CONSTRAINT chk_finished CHECK (finished = 'Y' OR finished = 'N')"
+                        + ")");
+                System.out.println("TABLE BOOKLISTS CREATED.");
+            }
 
             selectStmt.close();
         } catch (SQLException sqle) {
@@ -194,6 +289,7 @@ public class AttemptBean implements Serializable{
 
     }
 }
+
 
 
 class JdbcException extends Exception {

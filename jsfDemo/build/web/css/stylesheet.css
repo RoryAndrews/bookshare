@@ -4,7 +4,7 @@
 body {
     font-family: Helvetica, sans-serif;
     background-color: #f9f9f9;
-    margin: 50px;
+    margin: 0px 200px 50px 200px;
     color: #444;
 }
 
@@ -28,6 +28,8 @@ input { margin: 5px }
 #mainContainer {
     width: 500px;
     height: 250px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #left { float: left }

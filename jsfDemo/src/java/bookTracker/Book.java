@@ -16,14 +16,32 @@ public class Book {
     private String authors;
     private long isbn;
     private String publisher;
-    private LocalDate published;
+    private int published;
+    private String cover;
+
+    public long getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(long isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
     
-    public Book(String title, String authors, long isbn, String publisher, LocalDate published) {
+    public Book(String title, String authors, long isbn, String publisher, int published) {
         this.title = title;
         this.authors = authors;
         this.isbn = isbn;
         this.publisher = publisher;
         this.published = published;
+        this.cover = "http://images.amazon.com/images/P/" + isbn + ".01.LZ.jpg";
     }
 
     public String getTitle() {
@@ -40,10 +58,6 @@ public class Book {
 
     public void setAuthors(String authors) {
         this.authors = authors;
-    }
-
-    public long getISBN() {
-        return isbn;
     }
     
     public String getISBNstring() {
@@ -64,10 +78,6 @@ public class Book {
         return s;
     }
 
-    public void setISBN(long isbn) {
-        this.isbn = isbn;
-    }
-
     public String getPublisher() {
         return publisher;
     }
@@ -76,11 +86,11 @@ public class Book {
         this.publisher = publisher;
     }
 
-    public LocalDate getPublished() {
+    public int getPublished() {
         return published;
     }
 
-    public void setPublished(LocalDate published) {
+    public void setPublished(int published) {
         this.published = published;
     }
     

@@ -3,16 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/guessNumber/AttemptBean.java</file>
-            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/guessNumber/Attempt.java</file>
+            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/web/addbook.xhtml</file>
             <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/web/WEB-INF/web.xml</file>
             <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/web/greeting.xhtml</file>
             <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/web/response.xhtml</file>
-            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/guessNumber/UserNumberBean.java</file>
-            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/bookTracker/BookTrackerBean.java</file>
+            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/bookTracker/BookDatabase.java</file>
+            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/conf/mydb.properties</file>
+            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/web/css/stylesheet.css</file>
             <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/bookTracker/Book.java</file>
             <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/web/template.xhtml</file>
-            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/bookTracker/BookCatalog.java</file>
+            <file>file:/C:/Users/rory0/Documents/GitHub/bookshare/jsfDemo/src/java/bookTracker/AppController.java</file>
         </group>
     </open-files>
 </project-private>

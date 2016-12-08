@@ -6,21 +6,23 @@
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link href="css/stylesheet.css" rel="stylesheet" type="text/css" />
+        <h:outputStylesheet library="css" name="stylesheet.css" />
 
         <title><ui:insert name="title">Facelets Template</ui:insert></title>
     </h:head>
 
     <h:body>
-        <div id="mainContainer">
-            <div id="left" class="subContainer greyBox">
-                <ui:insert name="box">Box Content Here</ui:insert>
-            </div>
-            <div id="right" class="subContainer">
-                <img src="duke.png" alt="Duke waving" />
-            </div>
+        <div id="menubar">
+            <h:form>
+                <h:commandButton id="bookcatalog" value="Book Search" action="bookcatalog" />
+                <h:commandButton id="addbook" value="Add Book" action="addbook" />
+                <h:commandButton id="readinglist" value="Book Search" action="bookcatalog" />
+            </h:form>
         </div>
-        <ui:insert name="attempt-table">Table Here</ui:insert>
+        
+        <div id="mainContainer">
+                <ui:insert name="box">Box Content Here</ui:insert>
+        </div>
     </h:body>
 
 </html>
