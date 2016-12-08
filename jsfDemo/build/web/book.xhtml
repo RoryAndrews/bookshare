@@ -14,10 +14,10 @@
             </ui:define>
 
             <ui:define name="box">
-                <div id="left">
+                <div style="padding-left: 20px;" id="left">
                     <h:graphicImage value="#{AppController.getBookCover()}" />
                 </div>
-                <div id="right">
+                <div style="padding-left: 20px;" id="left">
                     <h:outputFormat value="Title: {0}">
                         <f:param value="#{AppController.getBookTitle()}" />
                     </h:outputFormat><br/>

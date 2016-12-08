@@ -21,7 +21,7 @@
                     ISBN:<h:inputText size="13" maxlength="13" value="#{BookDatabase.isbn}" /><br/>
                     Publisher:<h:inputText size="30" maxlength="128" value="#{BookDatabase.publisher}" /><br/>
                     Year Published:<h:inputText size="4" maxlength="4" value="#{BookDatabase.year}" /><br/>
-                    <h:commandButton id="submit" value="submit" action="#{BookDatabase.constructQuery()}" />
+                    <h:commandButton id="submit" value="submit" action="booksearch" />
                 </h:form>
                 <h:dataTable value="#{BookDatabase.findBooks()}" var="c"
                              styleClass="order-table"

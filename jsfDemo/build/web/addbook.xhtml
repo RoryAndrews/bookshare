@@ -16,16 +16,16 @@
             <ui:define name="box">
                 <h3>ADD BOOK</h3>
                 <h:form>
-                    Title:<h:inputText size="30" maxlength="128" binding="#{title}" /><br/>
-                    Author:<h:inputText size="30" maxlength="128" binding="#{authors}" /><br/>
-                    ISBN:<h:inputText size="13" label="isbn" maxlength="13" binding="#{isbn}">
+                    Title:<h:inputText size="30" maxlength="128" binding="#{xtitle}" /><br/>
+                    Author:<h:inputText size="30" maxlength="128" binding="#{xauthors}" /><br/>
+                    ISBN:<h:inputText size="13" label="isbn" maxlength="13" binding="#{xisbn}">
                             <f:validateLongRange minimum="0" />
                          </h:inputText> <br/>
-                    Publisher:<h:inputText size="30" maxlength="128" binding="#{publisher}" /><br/>
-                    Year Published:<h:inputText size="4" label="year" maxlength="4" binding="#{year}">
+                    Publisher:<h:inputText size="30" maxlength="128" binding="#{xpublisher}" /><br/>
+                    Year Published:<h:inputText size="4" label="year" maxlength="4" binding="#{xyear}">
                                         <f:validateLongRange minimum="0" maximum="2050" />
                                    </h:inputText><br/>
-                    <h:commandButton id="submit" value="submit" action="#{BookDatabase.addBook(title.value, authors.value, isbn.value, publisher.value, year.value)}" />
+                    <h:commandButton id="submit" value="submit" action="#{BookDatabase.addBook(xtitle.value, xauthors.value, xisbn.value, xpublisher.value, xyear.value)}" />
                 </h:form>
             </ui:define>
 

@@ -323,36 +323,36 @@ public class BookDatabase implements Serializable {
 //        this.year = year;
         
         String q = "SELECT * FROM BOOKCATALOG WHERE";
-        if (this.title.length() > 0) {
+        if (this.title != null && this.title.length() > 0) {
             q = q + " LOWER(title) LIKE LOWER( ? )";
             previous = true;
         }
-        if (this.authors.length() > 0) {
+        if (this.authors != null && this.authors.length() > 0) {
             if (previous) {
                 q = q + " AND";
             }
             q = q + " LOWER(authors) LIKE LOWER( ? )";
             previous = true;
         }
-        if (this.isbn.length() > 0) {
+        if (this.isbn != null && this.isbn.length() > 0) {
             if (previous) {
                 q = q + " AND";
             }
             q = q + " isbn = ?";
             previous = true;
         }
-        if (this.publisher.length() > 0) {
+        if (this.publisher != null && this.publisher.length() > 0) {
             if (previous) {
                 q = q + " AND";
             }
             q = q + " LOWER(publisher) LIKE LOWER( ? )";
             previous = true;
         }
-        if (this.year.length() > 0) {
+        if (this.year != null && this.year.length() > 0) {
             if (previous) {
                 q = q + " AND";
             }
-            q = q + " year = ?";
+            q = q + " published = ?";
             previous = true;
         }
         if(previous) {
@@ -368,6 +368,7 @@ public class BookDatabase implements Serializable {
     public List<Book> findBooks() {
         List<Book> list = new ArrayList<Book>();
         System.out.println("SEARCHING Book Catalog.");
+        constructQuery();
         
         if (query == null) {
             return getBooks();
@@ -377,27 +378,27 @@ public class BookDatabase implements Serializable {
             poStmt = conn.prepareStatement(query);
             int i = 1;
             if (this.title.length() > 0) {
-                System.out.println("TITLE");
+                System.out.println("TITLE: " + this.title + ".");
                 poStmt.setString(i, "%" + this.title + "%");
                 i++;
             }
             if (this.authors.length() > 0) {
-                System.out.println("AUTHORS");
+                System.out.println("AUTHORS: " + this.authors + ".");
                 poStmt.setString(i, "%" + this.authors + "%");
                 i++;
             }
             if (this.isbn.length() > 0) {
-                System.out.println("ISBN");
+                System.out.println("ISBN: " + this.isbn + ".");
                 poStmt.setLong(i, Long.parseLong(this.isbn));
                 i++;
             }
             if (this.publisher.length() > 0) {
-                System.out.println("PUBLISHER");
+                System.out.println("PUBLISHER: " + this.publisher + ".");
                 poStmt.setString(i, "%" + this.publisher + "%");
                 i++;
             }
             if (this.year.length() > 0) {
-                System.out.println("YEAR");
+                System.out.println("YEAR: " + this.year + ".");
                 poStmt.setInt(i, Integer.parseInt(this.year));
                 i++;
             }
@@ -474,7 +475,6 @@ public class BookDatabase implements Serializable {
             }
             System.exit(1);
         }
-
         return "booksearch";
     }
     
