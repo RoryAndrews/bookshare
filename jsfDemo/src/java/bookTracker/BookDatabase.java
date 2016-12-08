@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -32,12 +31,67 @@ public class BookDatabase implements Serializable {
     private static ResultSet rs;
     private static Connection conn;
     
+    private String query;
+    private String title;
+    private String authors;
+    private String isbn;
+    private String publisher;
+    private String year;
+    
     /*needed for properties file*/
     static Properties connProps = new Properties();
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(String authors) {
+        this.authors = authors;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
     
     public BookDatabase() {
         String db, userName, passwd, host, port;
         host=port=db=userName=passwd=null;
+        
+        this.query = null;
+        this.title = null;
+        this.authors = null;
+        this.isbn = null;
+        this.publisher = null;
+        this.year = null;
 
         try {
             db="XE";
@@ -50,6 +104,43 @@ public class BookDatabase implements Serializable {
         }catch (NullPointerException ne) {
             System.out.println("NullPointerException");
         }
+    }
+    
+    public Book findBook(long specificISBN) {
+        System.out.println("FINDING Book.");
+        Book b = null;
+
+        try {
+            selectStmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
+                                              ResultSet.CONCUR_READ_ONLY);
+            rs = selectStmt.executeQuery("SELECT * FROM BOOKCATALOG WHERE isbn=" + specificISBN);
+            while (rs.next()) {
+                b = new Book(rs.getString("title"), rs.getString("authors"), rs.getLong("isbn"), rs.getString("publisher"), rs.getInt("published"));
+            }
+
+            selectStmt.close();
+        } catch (SQLException sqle) {
+            System.out.println("ERROR IN findBook");
+            System.out.println("Error Msg: "+ sqle.getMessage());
+            System.out.println("SQLState: "+sqle.getSQLState());
+            System.out.println("SQLError: "+sqle.getErrorCode());
+            System.out.println("Rollback the transaction and quit the program");
+            System.out.println();
+            try {
+                conn.setAutoCommit(false);
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            try {
+                conn.rollback();
+            } catch (Exception e) {
+                JdbcException jdbcExc = new JdbcException(e, conn);
+                jdbcExc.handle();
+            }
+            System.exit(1);
+        }
+        return b;
     }
     
     public List<Book> getBooks() {
@@ -90,62 +181,99 @@ public class BookDatabase implements Serializable {
         return list;
     }
     
-    public List<Book> findBooks(String title, String authors, String isbn, String publisher, String year) {
-        List<Book> list = new ArrayList<Book>();
-        System.out.println("SEARCHING Book Catalog.");
+    public String constructQuery() { //String title, String authors, String isbn, String publisher, String year
         boolean previous = false;
         
-        String query = "SELECT * FROM BOOKCATALOG WHERE";
-        if (title.length() > 0) {
-            query = query + " title LIKE '%" + title + "%'";
+//        this.title = title;
+//        this.authors = authors;
+//        this.isbn = isbn;
+//        this.publisher = publisher;
+//        this.year = year;
+        
+        String q = "SELECT * FROM BOOKCATALOG WHERE";
+        if (this.title.length() > 0) {
+            q = q + " LOWER(title) LIKE LOWER( ? )";
             previous = true;
         }
-        if (author.length() > 0) {
+        if (this.authors.length() > 0) {
             if (previous) {
-                query = query + " AND";
+                q = q + " AND";
             }
-            query = query + " authors LIKE '%" + authors + "%'";
+            q = q + " LOWER(authors) LIKE LOWER( ? )";
             previous = true;
         }
-        if (isbn.length() > 0) {
+        if (this.isbn.length() > 0) {
             if (previous) {
-                query = query + " AND";
+                q = q + " AND";
             }
-            query = query + " isbn=" + isbn;
+            q = q + " isbn = ?";
             previous = true;
         }
-        if (publisher.length() > 0) {
+        if (this.publisher.length() > 0) {
             if (previous) {
-                query = query + " AND";
+                q = q + " AND";
             }
-            query = query + " publisher LIKE '%" + publisher + "%'";
+            q = q + " LOWER(publisher) LIKE LOWER( ? )";
             previous = true;
         }
-        if (year.length() > 0) {
+        if (this.year.length() > 0) {
             if (previous) {
-                query = query + " AND";
+                q = q + " AND";
             }
-            query = query + " year=" + year;
+            q = q + " year = ?";
             previous = true;
         }
-        if (!previous) {
+        if(previous) {
+            this.query = q;
+        }
+        else {
+            this.query = null;
+        }
+        
+        return "booksearch";
+    }
+    
+    public List<Book> findBooks() {
+        List<Book> list = new ArrayList<Book>();
+        System.out.println("SEARCHING Book Catalog.");
+        
+        if (query == null) {
             return getBooks();
         }
-                
-        
 
         try {
-            selectStmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
-                                              ResultSet.CONCUR_READ_ONLY);
-            rs = selectStmt.executeQuery(query);
+            poStmt = conn.prepareStatement(query);
+            int i = 1;
+            if (this.title.length() > 0) {
+                poStmt.setString(i, "%" + this.title + "%");
+                i++;
+            }
+            if (this.authors.length() > 0) {
+                poStmt.setString(i, "%" + this.authors + "%");
+                i++;
+            }
+            if (this.isbn.length() > 0) {
+                poStmt.setLong(i, Long.parseLong(this.isbn));
+                i++;
+            }
+            if (this.publisher.length() > 0) {
+                poStmt.setString(i, "%" + this.publisher + "%");
+                i++;
+            }
+            if (this.year.length() > 0) {
+                poStmt.setInt(i, Integer.parseInt(this.year));
+                i++;
+            }
+            rs = poStmt.executeQuery();
             while (rs.next()) {
                 Book b = new Book(rs.getString("title"), rs.getString("authors"), rs.getLong("isbn"), rs.getString("publisher"), rs.getInt("published"));
                 list.add(b);
             }
 
-            selectStmt.close();
+            poStmt.close();
         } catch (SQLException sqle) {
-            System.out.println("ERROR IN getBooks");
+            System.out.println("ERROR IN findBooks");
+            System.out.println("Query: " + this.query);
             System.out.println("Error Msg: "+ sqle.getMessage());
             System.out.println("SQLState: "+sqle.getSQLState());
             System.out.println("SQLError: "+sqle.getErrorCode());
@@ -169,17 +297,23 @@ public class BookDatabase implements Serializable {
     }
     
     public String addBook(Book addition) {
+        String q = "INSERT INTO BOOKCATALOG VALUES (?, ?, ?, ?, ?, ?)";
         try {
-            selectStmt = conn.createStatement();
+            poStmt = conn.prepareStatement(q);
+            
+            poStmt.setString(1, addition.getCover());
+            poStmt.setString(2, addition.getTitle());
+            poStmt.setString(3, addition.getAuthors());
+            poStmt.setLong(4, addition.getIsbn());
+            poStmt.setString(5, addition.getPublisher());
+            poStmt.setInt(6, addition.getPublished());
 
-            selectStmt.executeUpdate("INSERT INTO BOOKCATALOG VALUES ('"
-                    + addition.getCover()+ "','" + addition.getTitle()
-                    + "','" + addition.getAuthors() + "'," + addition.getIsbn() 
-                    + ",'" + addition.getPublisher() + "','" + addition.getPublished() + "')");
+            poStmt.executeUpdate();
 
-            selectStmt.close();
+            poStmt.close();
         } catch (SQLException sqle) {
             System.out.println("ERROR IN addBook");
+            System.out.println("QUERY: " + q);
             System.out.println("Error Msg: "+ sqle.getMessage());
             System.out.println("SQLState: "+sqle.getSQLState());
             System.out.println("SQLError: "+sqle.getErrorCode());

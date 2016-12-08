@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -12,7 +14,45 @@
             </ui:define>
 
             <ui:define name="box">
-                
+                <h:form>
+                    Title:<h:inputText size="30" maxlength="128" value="#{BookDatabase.title}" /><br/>
+                    Author:<h:inputText size="30" maxlength="128" value="#{BookDatabase.authors}" /><br/>
+                    ISBN:<h:inputText size="13" maxlength="13" value="#{BookDatabase.isbn}" /><br/>
+                    Publisher:<h:inputText size="30" maxlength="128" value="#{BookDatabase.publisher}" /><br/>
+                    Year Published:<h:inputText size="4" maxlength="4" value="#{BookDatabase.year}" /><br/>
+                    <h:commandButton id="submit" value="submit" action="#{BookDatabase.constructQuery()}" />
+                </h:form>
+                <h:dataTable value="#{BookDatabase.findBooks()}" var="c"
+                             styleClass="order-table"
+                             headerClass="order-table-header"
+                             rowClasses="order-table-odd-row,order-table-even-row"
+                             frame="box">
+                    <h:column>
+                        <f:facet name="header">
+                            Title
+                        </f:facet>
+                            #{c.getTitle()}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            Author
+                        </f:facet>
+                            #{c.getAuthors()}
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            Published
+                        </f:facet>
+                            #{c.getPublished()}
+                    </h:column>
+                    <h:column>
+                        <h:form>
+                            <h:commandButton id="submit" value="View" action="#{AppController.viewBook(c.getIsbn())}" />
+                        </h:form>
+                    </h:column>
+                </h:dataTable>
             </ui:define>
 
         </ui:composition>

@@ -18,6 +18,15 @@ public class Book {
     private String publisher;
     private int published;
     private String cover;
+    
+    public Book(String title, String authors, long isbn, String publisher, int published) {
+        this.title = title;
+        this.authors = authors;
+        this.isbn = isbn;
+        this.publisher = publisher;
+        this.published = published;
+        this.cover = "http://images.amazon.com/images/P/" + Book.getISBNstring(isbn) + ".01.LZ.jpg";
+    }
 
     public long getIsbn() {
         return isbn;
@@ -33,15 +42,6 @@ public class Book {
 
     public void setCover(String cover) {
         this.cover = cover;
-    }
-    
-    public Book(String title, String authors, long isbn, String publisher, int published) {
-        this.title = title;
-        this.authors = authors;
-        this.isbn = isbn;
-        this.publisher = publisher;
-        this.published = published;
-        this.cover = "http://images.amazon.com/images/P/" + isbn + ".01.LZ.jpg";
     }
 
     public String getTitle() {
@@ -64,7 +64,7 @@ public class Book {
         long temp = isbn;
         int n;
         if (isbn <= 999999999) {
-            n = 9;
+            n = 10;
         }
         else {
             n = 13;
@@ -94,5 +94,21 @@ public class Book {
         this.published = published;
     }
     
-    
+    public static String getISBNstring(long isbn) {
+        long temp = isbn;
+        int n;
+        if (isbn <= 999999999) {
+            n = 10;
+        }
+        else {
+            n = 13;
+        }
+        
+        String s = "";
+        for (int i = 0; i < n; i++) {
+            s = Long.toString(temp % 10) + s;
+            temp = temp / 10;
+        }
+        return s;
+    }
 }

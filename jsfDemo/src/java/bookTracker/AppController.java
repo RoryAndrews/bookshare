@@ -17,6 +17,7 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class AppController implements Serializable {
     private String username;
+    private Book specificBook;
     private BookDatabase catalog;
 
     public String getUsername() {
@@ -25,10 +26,40 @@ public class AppController implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-        
+    }
+    
+    public String viewBook(long isbn) {
+        this.specificBook = catalog.findBook(isbn);
+        return "book";
+    }
+    
+    public String getBookCover() {
+        return specificBook.getCover();
+    }
+    
+    public String getBookTitle() {
+        return specificBook.getTitle();
+    }
+    
+    public String getBookAuthors() {
+        return specificBook.getAuthors();
+    }
+
+    public String getBookISBN() {
+        return specificBook.getISBNstring();
+    }
+    
+    public String getBookPublisher() {
+        return specificBook.getPublisher();
+    }
+    
+    public int getBookPublished() {
+        return specificBook.getPublished();
     }
     
     public AppController() {
+        specificBook = null;
+        username = null;
         catalog = new BookDatabase();
         catalog.createTable();
     }
