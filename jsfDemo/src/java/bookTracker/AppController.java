@@ -6,6 +6,7 @@
 package bookTracker;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -53,8 +54,40 @@ public class AppController implements Serializable {
         return specificBook.getPublisher();
     }
     
-    public int getBookPublished() {
-        return specificBook.getPublished();
+    public String getBookPublished() {
+        return Integer.toString(specificBook.getPublished());
+    }
+    
+    public List<Book> getReadingList() {
+        return catalog.getList(username, 'N');
+    }
+    
+    public List<Book> getFinishedList() {
+        return catalog.getList(username, 'Y');
+    }
+    
+    public String addToList() {
+        if (this.username != null) {
+            return catalog.addToList(this.username, specificBook.getIsbn());
+        }
+        return "greeting";
+    }
+    
+    public String moveToFinished(long isbn) {
+        return catalog.updateList(this.username, isbn, true);
+    }
+    
+    public String moveToReading(long isbn) {
+        return catalog.updateList(this.username, isbn, false);
+    }
+    
+    public String goReadingList() {
+        if(username != null) {
+            return "readinglist";
+        }
+        else {
+            return "greeting";
+        }
     }
     
     public AppController() {

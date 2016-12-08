@@ -20,40 +20,9 @@
 
                 <h:form>
                     <h:inputText size="16" maxlength="16" value="#{AppController.username}" />
-                    <h:commandButton id="submit" value="submit" action="response" />
+                    <h:commandButton id="submit" value="submit" action="readinglist" />
                 </h:form>
-                
-                <h1>Book Catalog</h1>
-                <h:dataTable value="#{BookDatabase.getBooks()}" var="c"
-                             styleClass="order-table"
-                             headerClass="order-table-header"
-                             rowClasses="order-table-odd-row,order-table-even-row"
-                             frame="box">
-                    <h:column>
-                        <f:facet name="header">
-                            Title
-                        </f:facet>
-                            #{c.getTitle()}
-                    </h:column>
-
-                    <h:column>
-                        <f:facet name="header">
-                            Author
-                        </f:facet>
-                            #{c.getAuthors()}
-                    </h:column>
-
-                    <h:column>
-                        <f:facet name="header">
-                            Published
-                        </f:facet>
-                            #{c.getPublished()}
-                    </h:column>
-                </h:dataTable>
             </ui:define>
-            
-
-            
 
         </ui:composition>
 

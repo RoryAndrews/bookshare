@@ -20,7 +20,22 @@
                 <div id="right">
                     <h:outputFormat value="Title: {0}">
                         <f:param value="#{AppController.getBookTitle()}" />
-                    </h:outputFormat>
+                    </h:outputFormat><br/>
+                    <h:outputFormat value="Author(s): {0}">
+                        <f:param value="#{AppController.getBookAuthors()}" />
+                    </h:outputFormat><br/>
+                    <h:outputFormat value="ISBN: {0}">
+                        <f:param value="#{AppController.getBookISBN()}" />
+                    </h:outputFormat><br/>
+                    <h:outputFormat value="Publisher: {0}">
+                        <f:param value="#{AppController.getBookPublisher()}" />
+                    </h:outputFormat><br/>
+                    <h:outputFormat value="Year Published: {0}">
+                        <f:param value="#{AppController.getBookPublished()}" />
+                    </h:outputFormat><br/>
+                    <h:form>
+                        <h:commandButton id="submit" value="Add to Reading List" action="#{AppController.addToList()}" />
+                    </h:form>
                 </div>
 
             </ui:define>

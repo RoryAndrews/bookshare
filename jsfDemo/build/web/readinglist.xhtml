@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./template.xhtml">
+
+            <ui:define name="title">
+                Reading List
+            </ui:define>
+
+            <ui:define name="box">
+                <div id="left readlist" style="display: inline;">
+                    <h3>Reading List</h3>
+                    <h:dataTable value="#{AppController.getReadingList()}" var="c"
+                                 styleClass="order-table"
+                                 headerClass="order-table-header"
+                                 rowClasses="order-table-odd-row,order-table-even-row"
+                                 border="3"
+                                 width="800"
+                                 frame="box">
+                        <h:column>
+                            <f:facet name="header">
+                                Title
+                            </f:facet>
+                                #{c.getTitle()}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                Author
+                            </f:facet>
+                                #{c.getAuthors()}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                Published
+                            </f:facet>
+                                #{c.getPublished()}
+                        </h:column>
+                        <h:column>
+                            <h:form>
+                                <h:commandButton id="submit" value="View" action="#{AppController.viewBook(c.getIsbn())}" />
+                            </h:form>
+                        </h:column>
+                        <h:column>
+                            <h:form>
+                                <h:commandButton id="submit" value="Finish" action="#{AppController.moveToFinished(c.getIsbn())}" />
+                            </h:form>
+                        </h:column>
+                    </h:dataTable>
+                </div>
+                <div id="right readlist">
+                    <h3>Finished List</h3>
+                    <h:dataTable value="#{AppController.getFinishedList()}" var="c"
+                                 styleClass="order-table"
+                                 headerClass="order-table-header"
+                                 rowClasses="order-table-odd-row,order-table-even-row"
+                                 border="3"
+                                 width="800"
+                                 frame="box">
+                        <h:column>
+                            <f:facet name="header">
+                                Title
+                            </f:facet>
+                                #{c.getTitle()}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                Author
+                            </f:facet>
+                                #{c.getAuthors()}
+                        </h:column>
+
+                        <h:column>
+                            <f:facet name="header">
+                                Published
+                            </f:facet>
+                                #{c.getPublished()}
+                        </h:column>
+                        <h:column>
+                            <h:form>
+                                <h:commandButton id="submit" value="View" action="#{AppController.viewBook(c.getIsbn())}" />
+                            </h:form>
+                        </h:column>
+                        <h:column>
+                            <h:form>
+                                <h:commandButton id="submit" value="Read" action="#{AppController.moveToReading(c.getIsbn())}" />
+                            </h:form>
+                        </h:column>
+                    </h:dataTable>
+                </div>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

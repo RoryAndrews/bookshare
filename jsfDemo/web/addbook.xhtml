@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -13,12 +14,17 @@
             </ui:define>
 
             <ui:define name="box">
+                <h3>ADD BOOK</h3>
                 <h:form>
                     Title:<h:inputText size="30" maxlength="128" binding="#{title}" /><br/>
                     Author:<h:inputText size="30" maxlength="128" binding="#{authors}" /><br/>
-                    ISBN:<h:inputText size="13" maxlength="13" binding="#{isbn}" /><br/>
+                    ISBN:<h:inputText size="13" label="isbn" maxlength="13" binding="#{isbn}">
+                            <f:validateLongRange minimum="0" />
+                         </h:inputText> <br/>
                     Publisher:<h:inputText size="30" maxlength="128" binding="#{publisher}" /><br/>
-                    Year Published:<h:inputText size="4" maxlength="4" binding="#{year}" /><br/>
+                    Year Published:<h:inputText size="4" label="year" maxlength="4" binding="#{year}">
+                                        <f:validateLongRange minimum="0" maximum="2050" />
+                                   </h:inputText><br/>
                     <h:commandButton id="submit" value="submit" action="#{BookDatabase.addBook(title.value, authors.value, isbn.value, publisher.value, year.value)}" />
                 </h:form>
             </ui:define>

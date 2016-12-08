@@ -143,6 +143,138 @@ public class BookDatabase implements Serializable {
         return b;
     }
     
+    public String addToList(String username, long newISBN) {
+        String q = "SELECT * FROM BOOKLISTS WHERE username = ? AND isbn = ?";
+        try {
+            poStmt = conn.prepareStatement(q);
+            
+            poStmt.setString(1, username);
+            poStmt.setLong(2, newISBN);
+
+            rs = poStmt.executeQuery();
+            
+            if (!rs.isBeforeFirst()) {
+                poStmt.close();
+                q = "INSERT INTO BOOKLISTS VALUES (?, ?, 'N')";
+                poStmt = conn.prepareStatement(q);
+
+                poStmt.setString(1, username);
+                poStmt.setLong(2, newISBN);
+
+                poStmt.executeUpdate();
+
+                poStmt.close();
+            }
+        } catch (SQLException sqle) {
+            System.out.println("ERROR IN addToList");
+            System.out.println("QUERY: " + q);
+            System.out.println("Error Msg: "+ sqle.getMessage());
+            System.out.println("SQLState: "+sqle.getSQLState());
+            System.out.println("SQLError: "+sqle.getErrorCode());
+            System.out.println("Rollback the transaction and quit the program");
+            System.out.println();
+            try {
+                conn.setAutoCommit(false);
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            try {
+                conn.rollback();
+            } catch (Exception e) {
+                JdbcException jdbcExc = new JdbcException(e, conn);
+                jdbcExc.handle();
+            }
+            System.exit(1);
+        }
+
+        return "readinglist";
+    }
+    
+    public String updateList(String username, long targetISBN, boolean tofinished) {
+        String q = "UPDATE BOOKLISTS SET finished = ? WHERE username = ? AND isbn = ?";
+        try {
+            poStmt = conn.prepareStatement(q);
+            
+            if(tofinished) {
+                poStmt.setString(1, "Y");
+            }
+            else {
+                poStmt.setString(1, "N");
+            }
+
+            poStmt.setString(2, username);
+            poStmt.setLong(3, targetISBN);
+
+            poStmt.executeUpdate();
+
+            poStmt.close();
+        } catch (SQLException sqle) {
+            System.out.println("ERROR IN updateLIST");
+            System.out.println("QUERY: " + q);
+            System.out.println("Error Msg: "+ sqle.getMessage());
+            System.out.println("SQLState: "+sqle.getSQLState());
+            System.out.println("SQLError: "+sqle.getErrorCode());
+            System.out.println("Rollback the transaction and quit the program");
+            System.out.println();
+            try {
+                conn.setAutoCommit(false);
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            try {
+                conn.rollback();
+            } catch (Exception e) {
+                JdbcException jdbcExc = new JdbcException(e, conn);
+                jdbcExc.handle();
+            }
+            System.exit(1);
+        }
+
+        return "readinglist";
+    }
+    
+    public List<Book> getList(String username, char finished) {
+        List<Book> list = new ArrayList<Book>();
+        System.out.println("GETTING Reading List.");
+
+        String q = "SELECT * FROM BOOKCATALOG WHERE BOOKCATALOG.isbn IN (SELECT BOOKLISTS.isbn FROM BOOKLISTS WHERE username = ? AND finished = '" + finished + "')";
+        
+        try {
+            poStmt = conn.prepareStatement(q);
+            poStmt.setString(1, username);
+            rs = poStmt.executeQuery();
+            while (rs.next()) {
+                Book b = new Book(rs.getString("title"), rs.getString("authors"), rs.getLong("isbn"), rs.getString("publisher"), rs.getInt("published"));
+                list.add(b);
+            }
+
+            poStmt.close();
+        } catch (SQLException sqle) {
+            System.out.println("ERROR IN getReadingList");
+            System.out.println("Error Msg: "+ sqle.getMessage());
+            System.out.println("SQLState: "+sqle.getSQLState());
+            System.out.println("SQLError: "+sqle.getErrorCode());
+            System.out.println("Rollback the transaction and quit the program");
+            System.out.println();
+            try {
+                conn.setAutoCommit(false);
+            } catch (java.sql.SQLException e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            try {
+                conn.rollback();
+            } catch (Exception e) {
+                JdbcException jdbcExc = new JdbcException(e, conn);
+                jdbcExc.handle();
+            }
+            System.exit(1);
+        }
+        return list;
+    }
+    
     public List<Book> getBooks() {
         List<Book> list = new ArrayList<Book>();
         System.out.println("GETTING Book Catalog.");
@@ -245,24 +377,33 @@ public class BookDatabase implements Serializable {
             poStmt = conn.prepareStatement(query);
             int i = 1;
             if (this.title.length() > 0) {
+                System.out.println("TITLE");
                 poStmt.setString(i, "%" + this.title + "%");
                 i++;
             }
             if (this.authors.length() > 0) {
+                System.out.println("AUTHORS");
                 poStmt.setString(i, "%" + this.authors + "%");
                 i++;
             }
             if (this.isbn.length() > 0) {
+                System.out.println("ISBN");
                 poStmt.setLong(i, Long.parseLong(this.isbn));
                 i++;
             }
             if (this.publisher.length() > 0) {
+                System.out.println("PUBLISHER");
                 poStmt.setString(i, "%" + this.publisher + "%");
                 i++;
             }
             if (this.year.length() > 0) {
+                System.out.println("YEAR");
                 poStmt.setInt(i, Integer.parseInt(this.year));
                 i++;
+            }
+            if (i == 1) {
+                poStmt.close();
+                return getBooks();
             }
             rs = poStmt.executeQuery();
             while (rs.next()) {
